@@ -1,0 +1,26 @@
+name: Test
+
+on:
+  push:
+    branch: ["master"]
+  pull_request:
+    branch: ["master"]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.101
+ 
+    - name: Install dependencies
+      run: dotnet restore Src/
+    
+    - name: Unit Test
+      run: dotnet test Src/
