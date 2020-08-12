@@ -17,4 +17,13 @@
     <ProjectReference Include="..\AutumnBox.JSRT\AutumnBox.JSRT.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="JSModule\Scripts\ESTest.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="JSModule\Scripts\JSModuleTest.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

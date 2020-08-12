@@ -21,7 +21,7 @@ namespace AutumnBox.JSRT
     public interface IJSModule : IDisposable
     {
         string Name { get; }
-        string Auth { get; }
+        string Author { get; }
         string Id { get; }
         JSModuleStatus Status { get; }
         Task<object> Start();

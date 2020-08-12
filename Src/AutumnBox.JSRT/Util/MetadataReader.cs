@@ -39,7 +39,7 @@ namespace AutumnBox.JSRT.Util
             {
                 if (match.Success)
                 {
-                    KV.Add(match.Result("${key}"), match.Result("${value}"));
+                    KV.Add(match.Result("${key}"), match.Result("${value}").Replace("\r",""));
                 }
             }
         }

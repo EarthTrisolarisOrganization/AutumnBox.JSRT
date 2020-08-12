@@ -92,5 +92,14 @@ namespace AutumnBox.JSRT.Tests
             Assert.AreEqual("https://www.atmb.top", reader["url"]);
             Assert.AreEqual("https://github.com/zsh2401/AutumnBox ", reader["opensource"]);
         }
+
+        [TestMethod]
+        public void WindowsNewLine() {
+            string header = "// @name a\r\n" +
+                    "// @description b\r\n";
+            var reader = new MetadataReader(header);
+            Assert.AreEqual("a",reader["name"]);
+            Assert.AreEqual("b", reader["description"]);
+        }
     }
 }
