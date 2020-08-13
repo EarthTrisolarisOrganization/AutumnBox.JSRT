@@ -24,8 +24,8 @@ namespace AutumnBox.JSRT
         string Author { get; }
         string Id { get; }
         JSModuleStatus Status { get; }
-        Task<object> Start();
-        Task<object> CallMethod(string methodName, params object[] args);
-        Task<object> RaiseEvent(string eventId, params object[] args);
+        Task<object> StartAsync();
+        Task<object> InvokeAsync(string methodName, params object[] args);
+        Task<object> RaiseEventAsync(string eventId, params object[] args);
     }
 }

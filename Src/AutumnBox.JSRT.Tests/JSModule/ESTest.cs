@@ -13,10 +13,13 @@
 *
 * ==============================================================================
 */
+using Microsoft.ClearScript.JavaScript;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace AutumnBox.JSRT.Tests.JSModule
 {
@@ -27,10 +30,37 @@ namespace AutumnBox.JSRT.Tests.JSModule
         public void ConstMethodIsNotGlobal()
         {
             using var module = NewJSModule();
-            var task = module.CallMethod("f");
-            Assert.ThrowsException<AggregateException>(() => task.Wait());
-            Assert.ThrowsException<AggregateException>(() => task.Result);
-            //Assert.AreEqual(10, task.Result);
+            module.InvokeAsync("f").ContinueWith(task =>
+            {
+                Assert.IsTrue(task.IsFaulted);
+                Trace.WriteLine(task.Exception);
+            }).Wait();
+        }
+
+        [TestMethod]
+        public void IsSupportPromise()
+        {
+            using var module = NewJSModule();
+
+            module.GetGlobalVariable("promise").ToTask().ContinueWith(task =>
+            {
+                Assert.AreEqual(2401, task.Result);
+            }).Wait();
+
+            Assert.ThrowsException<ArgumentException>(() =>
+            {
+                Task<object> promise = module.GetGlobalVariable("notPromise").ToTask();
+            }, "The object is not a promise.");
+        }
+
+        [TestMethod]
+        public void AsyncResult()
+        {
+            using var module = NewJSModule();
+            module.InvokeAsync("after").ContinueWith(task =>
+            {
+                Assert.AreEqual("c", task.Result);
+            }).Wait();
         }
     }
 }

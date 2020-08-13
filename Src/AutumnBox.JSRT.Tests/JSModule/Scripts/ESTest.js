@@ -5,3 +5,9 @@
 const f = () => {
     return 10;
 }
+var notPromise = 2401;
+var promise = Promise.resolve(2401);
+
+async function after() {
+    return await "c";
+}

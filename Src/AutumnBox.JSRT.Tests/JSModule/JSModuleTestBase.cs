@@ -23,8 +23,15 @@ namespace AutumnBox.JSRT.Tests.JSModule
     {
         protected Impl.JSModule NewJSModule()
         {
-            var name = this.GetType().Name;
+            return NewJSModuleWithName(this.GetType().Name);
+        }
+        protected Impl.JSModule NewJSModuleWithName(string name)
+        {
             var script = File.ReadAllText($"JSModule/Scripts/{name}.js");
+            return NewJSModuleWithScript(script);
+        }
+        protected Impl.JSModule NewJSModuleWithScript(string script)
+        {
             return new Impl.JSModule(script);
         }
     }

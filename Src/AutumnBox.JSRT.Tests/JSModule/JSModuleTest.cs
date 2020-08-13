@@ -62,16 +62,19 @@ namespace AutumnBox.JSRT.Tests.JSModule
         public void RunMain()
         {
             using var moudle = NewHelloWorldMoule();
-            var task = moudle.Start();
-            task.Wait();
-            Assert.AreEqual(2401, task.Result);
+            moudle.StartAsync().ContinueWith(task =>
+            {
+                Assert.AreEqual(2401, task.Result);
+            }).Wait();
         }
         [TestMethod]
-        public void EventTest() {
+        public void EventTest()
+        {
             using var moudle = NewHelloWorldMoule();
-            var task = moudle.RaiseEvent("b",1,2,3);
-            task.Wait();
-            Assert.AreEqual("b-4",task.Result);
+            moudle.RaiseEventAsync("b", 1, 2, 3).ContinueWith(task =>
+           {
+               Assert.AreEqual("b-4", task.Result);
+           }).Wait();
         }
     }
 }

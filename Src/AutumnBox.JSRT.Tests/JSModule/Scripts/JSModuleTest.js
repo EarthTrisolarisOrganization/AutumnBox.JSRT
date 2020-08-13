@@ -5,7 +5,7 @@
 function atmbMain() {
     return testMethod();
 }
-function atmbEventHandler(eventName) {
+function atmbEvent(eventName) {
     return eventName + "-" + arguments.length;
 }
 const testMethod = () => {

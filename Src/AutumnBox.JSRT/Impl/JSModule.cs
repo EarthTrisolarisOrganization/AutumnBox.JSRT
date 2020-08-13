@@ -15,6 +15,7 @@
 */
 using AutumnBox.JSRT.Util;
 using Microsoft.ClearScript;
+using Microsoft.ClearScript.JavaScript;
 using Microsoft.ClearScript.V8;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ namespace AutumnBox.JSRT.Impl
 {
     public class JSModule : IJSModule
     {
-        public const string EVENT_HANDLER_NAME = "atmbEventHandler";
+        public const string EVENT_HANDLER_NAME = "atmbEvent";
         public const string MAIN_METHOD = "atmbMain";
 
         private readonly string js;
@@ -56,11 +57,11 @@ namespace AutumnBox.JSRT.Impl
             engine.AddHostType(typeof(Console));
         }
 
-        public ValueType GetGlobalVariable(string name)
+        public object GetGlobalVariable(string name)
         {
             try
             {
-                return (ValueType)engine.Evaluate($"{name}");
+                return engine.Evaluate($"{name}");
             }
             catch (ScriptEngineException e)
             {
@@ -74,27 +75,65 @@ namespace AutumnBox.JSRT.Impl
             engine.Evaluate(script);
         }
 
-        public Task<object> CallMethod(string methodName, params object[] args)
+        public object Eval(string code)
         {
-            return Task.Run(() => engine.Invoke(methodName, args));
+            return engine.Evaluate(code);
+        }
+
+        public Task<object> InvokeAsync(string methodName, params object[] args)
+        {
+            return Task.Run(async () =>
+            {
+                object result = null;
+                try
+                {
+                    result = engine.Invoke(methodName, args);
+                    return await result.ToTask();
+                }
+                catch (ArgumentException)
+                {
+                    return await Task.FromResult(result);
+                }
+                catch (ScriptEngineException e)
+                {
+                    throw new InvalidOperationException(e.Message, e);
+                }
+            });
+        }
+
+        public Task<object> RaiseEventAsync(string eventId, params object[] args)
+        {
+            return Task.Run(async () =>
+            {
+                try
+                {
+                    return await InvokeAsync(EVENT_HANDLER_NAME, new object[] { eventId }.Concat(args).ToArray());
+                }
+                catch (ScriptEngineException e)
+                {
+                    if (e.Message.Contains("TypeError: Method or property not found"))
+                    {
+                        return null;
+                    }
+                    else
+                    {
+                        throw e;
+                    }
+                }
+            });
+        }
+
+        public Task<object> StartAsync()
+        {
+            return InvokeAsync(MAIN_METHOD);
         }
 
         public void Dispose()
         {
-            RaiseEvent("dispose").ContinueWith((task) =>
+            RaiseEventAsync("dispose").ContinueWith((task) =>
             {
                 engine.Dispose();
             });
-        }
-
-        public Task<object> RaiseEvent(string eventId, params object[] args)
-        {
-            return CallMethod(EVENT_HANDLER_NAME, new object[] { eventId }.Concat(args).ToArray());
-        }
-
-        public Task<object> Start()
-        {
-            return CallMethod(MAIN_METHOD);
         }
     }
 }
