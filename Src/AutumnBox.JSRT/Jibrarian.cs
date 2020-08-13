@@ -33,6 +33,7 @@ using AutumnBox.OpenFramework.Management.ExtLibrary.Impl;
 using AutumnBox.OpenFramework.Open;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace AutumnBox.JSRT
@@ -66,6 +67,7 @@ namespace AutumnBox.JSRT
 #pragma warning restore IDE0051 // 删除未使用的私有成员
 #pragma warning restore IDE0044 // 添加只读修饰符
 
+        public List<IJSModule> Modules { get; } = new List<IJSModule>();
         public override void Ready()
         {
             base.Ready();
@@ -73,12 +75,22 @@ namespace AutumnBox.JSRT
             this.Storage = storageManager.Open(STORAGE_ID);
             StartJSRTService();
         }
+        public void Regiser(IJSModule module)
+        {
+            LibsManager.Registry.Add(new JSModuleExtensionInfo(module));
+        }
+        public void Unregister(IJSModule module)
+        {
+            var targetToRemove = LibsManager.Registry.Where(r => r.Id == module.Id).FirstOrDefault();
+            LibsManager.Registry.Remove(targetToRemove);
+        }
         void StartJSRTService() { }
         void FreeJSRTService() { }
         public override void Destory()
         {
             base.Destory();
             this.Storage.ClearCache();
+            Modules.ForEach(m => m.RaiseEventAsync("destory"));
             FreeJSRTService();
         }
     }

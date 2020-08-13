@@ -14,7 +14,9 @@
 * ==============================================================================
 */
 using AutumnBox.Leafx.Container;
+using AutumnBox.OpenFramework.Management;
 using AutumnBox.OpenFramework.Management.ExtInfo;
+using AutumnBox.OpenFramework.Management.ExtLibrary;
 using AutumnBox.OpenFramework.Open;
 using System;
 using System.Collections.Generic;
@@ -22,13 +24,17 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace AutumnBox.JSRT
 {
-    class JSModuleExtensionInfo : IExtensionInfo
+    class JSModuleExtensionInfo : IExtensionInfo, IRegisteredExtensionInfo
     {
         private readonly IJSModule module;
 
         public string Id => module.Id;
 
         public IReadOnlyDictionary<string, ValueReader> Metadata { get; }
+
+        public IExtensionInfo ExtensionInfo => this;
+
+        public ILibrarian? Librarian => Jibrarian.Instance;
 
         public JSModuleExtensionInfo(IJSModule module)
         {
@@ -54,6 +60,7 @@ namespace AutumnBox.JSRT
         {
             return new JSModuleProcedure(module);
         }
+
 
         private class JSModuleProcedure : IExtensionProcedure
         {
