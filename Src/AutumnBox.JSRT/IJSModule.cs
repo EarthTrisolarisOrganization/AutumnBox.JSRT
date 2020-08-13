@@ -14,6 +14,7 @@
 * ==============================================================================
 */
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace AutumnBox.JSRT
@@ -23,6 +24,7 @@ namespace AutumnBox.JSRT
         string Name { get; }
         string Author { get; }
         string Id { get; }
+        IReadOnlyDictionary<string, string> Metadata { get; }
         JSModuleStatus Status { get; }
         Task<object> StartAsync();
         Task<object> InvokeAsync(string methodName, params object[] args);

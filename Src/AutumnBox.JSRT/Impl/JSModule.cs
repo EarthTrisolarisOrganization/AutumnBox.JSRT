@@ -31,6 +31,7 @@ namespace AutumnBox.JSRT.Impl
         public const string MAIN_METHOD = "atmbMain";
 
         private readonly string js;
+
         public string Name => metadata["name"];
 
         public string Author => metadata["author"];
@@ -38,6 +39,8 @@ namespace AutumnBox.JSRT.Impl
         public string Id => metadata["id"];
 
         public JSModuleStatus Status { get; private set; } = JSModuleStatus.Idle;
+
+        public IReadOnlyDictionary<string, string> Metadata => metadata.KV;
 
         public readonly V8ScriptEngine engine;
         private readonly MetadataReader metadata;

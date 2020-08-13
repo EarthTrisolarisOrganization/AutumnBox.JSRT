@@ -17,12 +17,13 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace AutumnBox.JSRT.Util
 {
     public sealed class MetadataReader
     {
-        private readonly Dictionary<string, string> KV;
+        public IReadOnlyDictionary<string, string> KV { get; private set; }
         public string this[string key]
         {
             get
@@ -34,14 +35,15 @@ namespace AutumnBox.JSRT.Util
             new Regex(@"^//\s@(?<key>[\w|\d]+)\s+(?<value>.+)$", RegexOptions.Compiled | RegexOptions.Multiline);
         public MetadataReader(string jsScript)
         {
-            KV = new Dictionary<string, string>();
-            foreach (Match match in headerMetadataRegex.Matches(jsScript))
+            var tmp = new Dictionary<string, string>();
+            foreach (var match in from Match match in headerMetadataRegex.Matches(jsScript)
+                                  where match.Success
+                                  select match)
             {
-                if (match.Success)
-                {
-                    KV.Add(match.Result("${key}"), match.Result("${value}").Replace("\r",""));
-                }
+                tmp.Add(match.Result("${key}"), match.Result("${value}").Replace("\r", ""));
             }
+
+            this.KV = tmp;
         }
     }
 }
