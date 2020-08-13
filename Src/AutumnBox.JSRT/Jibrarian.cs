@@ -26,14 +26,17 @@ See the Mulan PSL v2 for more details.
 *
 * ==============================================================================
 */
+using AutumnBox.JSRT.Impl;
 using AutumnBox.Leafx.Container;
 using AutumnBox.Leafx.ObjectManagement;
+using AutumnBox.Logging;
 using AutumnBox.OpenFramework.Management;
 using AutumnBox.OpenFramework.Management.ExtLibrary.Impl;
 using AutumnBox.OpenFramework.Open;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace AutumnBox.JSRT
@@ -71,9 +74,14 @@ namespace AutumnBox.JSRT
         public override void Ready()
         {
             base.Ready();
+            SLogger<Jibrarian>.Info("Ready");
             Instance = this;
             this.Storage = storageManager.Open(STORAGE_ID);
             StartJSRTService();
+            Regiser(new JSModule("" +
+                "// @name Test\n" +
+                "// @author zsh2401\n" +
+                "function atmbMain(){ throw \"ERROR\" }"));
         }
         public void Regiser(IJSModule module)
         {
